@@ -3,9 +3,28 @@
 # Variable global para usuario autenticado
 AUTH_USER=""
 
+USERS_FILE="users.db"
+touch "$USERS_FILE"
+
 # Pausa para que el usuario vea los mensajes
 pause() {
   read -rp "Presiona ENTER para continuar..."
+}
+
+registro_usuario() {
+  echo -e "\n== Registro de usuario =="
+  read -rp "Nombre de usuario: " user
+
+  if grep -q "^${user}:" "$USERS_FILE"; then
+    echo "⚠️  El usuario '${user}' ya existe."
+    return
+  fi
+
+  read -rp "Contraseña: " pass
+
+  echo "${user}:${pass}" >> "$USERS_FILE"
+  echo -e "\nUsuario ${user} registrado correctamente."
+  pause
 }
 
 # --- Menú principal ---
@@ -20,8 +39,7 @@ menu_principal() {
 
     case $opcion in
       1)
-        echo -e "\nHas elegido Registrarse"
-        pause
+        registro_usuario
         ;;
       2)
         echo -e "\nHas elegido Iniciar sesión"
