@@ -27,6 +27,36 @@ registro_usuario() {
   pause
 }
 
+login_usuario() {
+  echo -e "\n== Inicio de sesión =="
+  read -rp "Nombre de usuario: " user
+
+  # Verifica existencia
+  if ! grep -q "^${user}:" "$USERS_FILE"; then
+    echo "Usuario '${user}' no encontrado."
+    pause
+    return
+  fi
+
+  # Pide contraseña (visible)
+  read -rp "Contraseña: " pass
+
+  # Obtiene la contraseña guardada
+  stored_pass=$(grep "^${user}:" "$USERS_FILE" | head -n1 | cut -d: -f2)
+
+  # Comprueba contraseña
+  if [[ "$pass" != "$stored_pass" ]]; then
+    echo "Contraseña incorrecta. Ingrese nuevamente"
+    pause
+    return
+  fi
+
+  AUTH_USER="$user"
+  clear
+  echo -e "\nBienvenido/a ${user}!"
+  pause
+}
+
 # --- Menú principal ---
 menu_principal() {
   while true; do
@@ -42,8 +72,7 @@ menu_principal() {
         registro_usuario
         ;;
       2)
-        echo -e "\nHas elegido Iniciar sesión"
-        pause
+        login_usuario
         ;;
       0)
         echo -e "\n¡Hasta luego!"
