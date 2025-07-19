@@ -3,8 +3,13 @@
 # Variable global para usuario autenticado
 AUTH_USER=""
 
+# Archivo de usuarios
 USERS_FILE="users.db"
 touch "$USERS_FILE"
+
+# Archivo de productos
+PRODUCTS_FILE="products.db"
+touch "$PRODUCTS_FILE"
 
 # Pausa para que el usuario vea los mensajes
 pause() {
@@ -16,7 +21,8 @@ registro_usuario() {
   read -rp "Nombre de usuario: " user
 
   if grep -q "^${user}:" "$USERS_FILE"; then
-    echo "⚠️  El usuario '${user}' ya existe."
+    echo "⚠  El usuario '${user}' ya existe."
+    pause
     return
   fi
 
@@ -31,30 +37,70 @@ login_usuario() {
   echo -e "\n== Inicio de sesión =="
   read -rp "Nombre de usuario: " user
 
-  # Verifica existencia
   if ! grep -q "^${user}:" "$USERS_FILE"; then
     echo "Usuario '${user}' no encontrado."
     pause
-    return
+    return 1
   fi
 
-  # Pide contraseña (visible)
   read -rp "Contraseña: " pass
-
-  # Obtiene la contraseña guardada
   stored_pass=$(grep "^${user}:" "$USERS_FILE" | head -n1 | cut -d: -f2)
 
-  # Comprueba contraseña
   if [[ "$pass" != "$stored_pass" ]]; then
     echo "Contraseña incorrecta. Ingrese nuevamente"
     pause
-    return
+    return 1
   fi
 
   AUTH_USER="$user"
   clear
   echo -e "\nBienvenido/a ${user}!"
   pause
+  return 0
+}
+
+agregar_producto() {
+  echo -e "\n== Alta de producto =="
+  read -rp "Nombre: " name
+  read -rp "Descripción: " desc
+  read -rp "Precio: " price
+  read -rp "Stock: " stock
+
+  echo "${name}|${desc}|${price}|${stock}" >> "$PRODUCTS_FILE"
+  echo -e "\nProducto ${name} agregado correctamente."
+  pause
+}
+
+listar_productos() {
+  echo -e "\n== Lista de productos =="
+  while IFS="|" read -r name desc price stock; do
+    echo "Nombre: $name | Precio: $price | Stock: $stock"
+  done < "$PRODUCTS_FILE"
+  pause
+}
+
+menu_usuario() {
+  while true; do
+    clear
+    echo "=== Menú de $AUTH_USER ==="
+    echo "1) Agregar producto"
+    echo "2) Listar productos"
+    echo "3) Cerrar sesión"
+    read -rp "Opción: " opt
+
+    case $opt in
+      1) agregar_producto ;;
+      2) listar_productos ;;
+      3)
+        AUTH_USER=""
+        break
+        ;;
+      *)
+        echo "Opción inválida."
+        pause
+        ;;
+    esac
+  done
 }
 
 # --- Menú principal ---
@@ -68,11 +114,11 @@ menu_principal() {
     read -rp "Elige una opción: " opcion
 
     case $opcion in
-      1)
-        registro_usuario
-        ;;
+      1) registro_usuario ;;
       2)
-        login_usuario
+        if login_usuario; then
+          menu_usuario
+        fi
         ;;
       0)
         echo -e "\n¡Hasta luego!"
