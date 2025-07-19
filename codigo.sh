@@ -79,19 +79,62 @@ listar_productos() {
   pause
 }
 
+vender_producto() {
+  echo -e "\n== Venta de producto =="
+  read -rp "Nombre del producto a comprar: " prod
+
+  # Busca el producto
+  line=$(grep -m1 "^${prod}|" "$PRODUCTS_FILE")
+  if [[ -z "$line" ]]; then
+    echo "Producto '${prod}' no encontrado."
+    pause
+    return
+  fi
+
+  # Separa campos
+  IFS="|" read -r name desc price stock <<< "$line"
+
+  # Pide cantidad
+  read -rp "Cantidad a comprar: " qty
+  if ! [[ "$qty" =~ ^[0-9]+$ ]] || (( qty <= 0 )); then
+    echo "Cantidad inválida."
+    pause
+    return
+  fi
+
+  # Verifica stock
+  if (( qty > stock )); then
+    echo "Stock insuficiente. Solo quedan ${stock} unidades."
+    pause
+    return
+  fi
+
+  # Calcula nuevo stock y actualiza el archivo
+  newstock=$((stock - qty))
+  awk -F"|" -v prod="$prod" -v newstock="$newstock" 'BEGIN{OFS=FS}
+    $1==prod { $4=newstock }
+    { print }
+  ' "$PRODUCTS_FILE" > tmp.$$ && mv tmp.$$ "$PRODUCTS_FILE"
+
+  echo "Compra realizada. Stock restante: ${newstock}."
+  pause
+}
+
 menu_usuario() {
   while true; do
     clear
     echo "=== Menú de $AUTH_USER ==="
     echo "1) Agregar producto"
     echo "2) Listar productos"
-    echo "3) Cerrar sesión"
+    echo "3) Vender producto"
+    echo "4) Cerrar sesión"
     read -rp "Opción: " opt
 
     case $opt in
       1) agregar_producto ;;
       2) listar_productos ;;
-      3)
+      3) vender_producto ;;
+      4)
         AUTH_USER=""
         break
         ;;
