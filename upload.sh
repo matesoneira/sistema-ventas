@@ -13,25 +13,24 @@ else
     echo "Hay cambios. Realizando commit..."
 
     # Obtener cantidad de líneas modificadas
-    resumen=$(git diff --shortstat HEAD~1 HEAD)
-    lineas=$(echo "$resumen" | grep -o '[0-9]\+ insert' | grep -o '[0-9]\+')
+    # Este cálculo se hace antes del commit para que podamos agregarlo al README
+    git diff --cached > diff.tmp
+    lineas=$(grep -c '^+' diff.tmp)
+    rm diff.tmp
 
-    # Si no encuentra inserciones, pone 0
-    if [ -z "$lineas" ]; then
-        lineas=0
-    fi
-
+    # Agregar mensaje al README (antes del commit)
     echo "- Último commit: $fecha – Se modificaron $lineas líneas" >> README.md
-    
-        # Agregar todos los cambios
+
+    # Agregar todos los cambios (incluyendo el README)
     git add .
 
     # Crear mensaje de commit con fecha
     mensaje="Commit automático: $fecha"
     git commit -m "$mensaje"
-    
+
     # Subir a GitHub
     git push
-    
+
     echo "Commit realizado y README actualizado."
 fi
+
