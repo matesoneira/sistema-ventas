@@ -1,0 +1,28 @@
+name: Ejecutar script semanal
+
+on:
+  schedule:
+    - cron: '0 10 * * 1'  # todos los lunes a las 10:00 UTC
+  workflow_dispatch:      # permite ejecutarlo manualmente también
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: Dar permisos de ejecución al script
+        run: chmod +x upload.sh
+
+      - name: Ejecutar script upload.sh
+        run: ./upload.sh
+
+      - name: Hacer push si hay cambios
+        run: |
+          git config --global user.email "ms228616@fi365.ort.edu.uy"
+          git config --global user.name "matesoneira"
+          git add README.md
+          git commit -m "Actualización automática semanal [bot]" || echo "Sin cambios"
+          git push origin HEAD

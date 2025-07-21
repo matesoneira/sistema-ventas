@@ -1,0 +1,15 @@
+blank_issues_enabled: false
+contact_links: []
+issue_templates:
+  - name: 🐛 Bug Report
+    description: Informá un bug en el sistema
+    file: bug_report.md
+  - name: 📄 Documentación
+    description: Reportá un problema o sugerencia de documentación
+    file: documentation.md
+  - name: ✨ Mejora
+    description: Proponé una mejora sobre una funcionalidad existente
+    file: enhancement.md
+  - name: 🚀 Nueva funcionalidad
+    description: Proponé una nueva funcionalidad para el proyecto
+    file: feature_request.md
