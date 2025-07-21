@@ -12,13 +12,6 @@ if [ -z "$cambios" ]; then
 else
     echo "Hay cambios. Realizando commit..."
 
-    # Agregar todos los cambios
-    git add .
-
-    # Crear mensaje de commit con fecha
-    mensaje="Commit automático: $fecha"
-    git commit -m "$mensaje"
-
     # Obtener cantidad de líneas modificadas
     resumen=$(git diff --shortstat HEAD~1 HEAD)
     lineas=$(echo "$resumen" | grep -o '[0-9]\+ insert' | grep -o '[0-9]\+')
@@ -29,6 +22,13 @@ else
     fi
 
     echo "- Último commit: $fecha – Se modificaron $lineas líneas" >> README.md
+    
+        # Agregar todos los cambios
+    git add .
+
+    # Crear mensaje de commit con fecha
+    mensaje="Commit automático: $fecha"
+    git commit -m "$mensaje"
     
     # Subir a GitHub
     git push
