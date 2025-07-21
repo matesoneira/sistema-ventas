@@ -19,9 +19,6 @@ else
     mensaje="Commit automático: $fecha"
     git commit -m "$mensaje"
 
-    # Subir a GitHub
-    git push
-
     # Obtener cantidad de líneas modificadas
     resumen=$(git diff --shortstat HEAD~1 HEAD)
     lineas=$(echo "$resumen" | grep -o '[0-9]\+ insert' | grep -o '[0-9]\+')
@@ -32,5 +29,9 @@ else
     fi
 
     echo "- Último commit: $fecha – Se modificaron $lineas líneas" >> README.md
+    
+    # Subir a GitHub
+    git push
+    
     echo "Commit realizado y README actualizado."
 fi
