@@ -17,3 +17,4 @@ Este proyecto implementa un sistema básico de ventas con:
 - Último commit: 21/07/2025 09:21 – Se modificaron 0 líneas
 - Última revisión: 21/07/2025 09:22 – Sin cambios
 - Último commit: 21/07/2025 09:22 – Se modificaron 0 líneas
+- Último commit: 21/07/2025 09:23 – Se modificaron 46 líneas (insertadas: 28, eliminadas: 18)
