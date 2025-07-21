@@ -10,3 +10,4 @@ Este proyecto implementa un sistema básico de ventas con:
 
 ## Historial de cambios automatizado
 
+- Última revisión: 21/07/2025 09:10 – Sin cambios
